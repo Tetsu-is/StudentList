@@ -40,13 +40,10 @@ func main() {
 	})
 
 	//read all students
-	r.GET("/students", func(c *gin.Context) {
-		var students []Student
-		if err := db.Find(&students).Error; err != nil {
-			c.AbortWithStatus(404)
-		} else {
-			c.JSON(200, students)
-		}
+	r.GET("/student", func(c *gin.Context) {
+		students := []Student{}
+		db.Find(&students)
+		c.JSON(200, students)
 	})
 
 	//read student by student_id
