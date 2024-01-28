@@ -31,7 +31,7 @@ func main() {
 		})
 	})
 
-	//create student
+	//create student ok
 	r.POST("/student", func(c *gin.Context) {
 		var student Student
 		c.BindJSON(&student)
@@ -39,14 +39,14 @@ func main() {
 		c.JSON(200, student)
 	})
 
-	//read all students
+	//read all students ok
 	r.GET("/student", func(c *gin.Context) {
 		students := []Student{}
 		db.Find(&students)
 		c.JSON(200, students)
 	})
 
-	//read student by student_id
+	//read student by student_id ok
 	r.GET("/student/:student_id", func(c *gin.Context) {
 		var student Student
 		id := c.Params.ByName("student_id")

@@ -1,7 +1,7 @@
 -- 生徒テーブルの作成
 create table students (
     student_id int auto_increment primary key,
-    name varchar(255) not null unique,
+    name varchar(255) not null,
     age int not null
 );
 
