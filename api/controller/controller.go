@@ -35,7 +35,7 @@ func UpdateStudent(c *gin.Context) {
 		return
 	}
 
-	data.StudentID = new.StudentID
+	data.Name, data.Age = new.Name, new.Age
 
 	data.Update()
 
@@ -45,6 +45,6 @@ func UpdateStudent(c *gin.Context) {
 func DeleteStudent(c *gin.Context) {
 	id := c.Params.ByName("student_id")
 	data := model.ReadByID(id)
-	data.Delete(id)
+	data.Delete()
 	c.JSON(200, data)
 }
