@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -59,12 +61,25 @@ func main() {
 	r.PUT("/student/:student_id", func(c *gin.Context) {
 		var student Student
 		id := c.Params.ByName("student_id")
+
 		if err := db.Where("student_id = ?", id).First(&student).Error; err != nil {
-			c.AbortWithStatus(404)
+			c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
+			return
 		}
-		c.BindJSON(&student)
-		db.Save(&student)
-		c.JSON(200, student)
+		var newStudent Student
+		if err := c.ShouldBindJSON(&newStudent); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		newStudent.StudentID = student.StudentID
+
+		if err := db.Model(&student).Where("student_id = ?", id).Save(&newStudent).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, newStudent)
 	})
 
 	//delete student by id
