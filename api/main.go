@@ -83,6 +83,22 @@ func main() {
 	})
 
 	//delete student by id
+	r.DELETE("/student/:student_id", func(c *gin.Context) {
+		var student Student
+		id := c.Params.ByName("student_id")
+
+		if err := db.Where("student_id = ?", id).First(&student).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
+			return
+		}
+
+		if err := db.Where("student_id = ?", id).Delete(&student).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, "Deleted!")
+	})
 
 	r.Run()
 }
