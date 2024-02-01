@@ -36,8 +36,6 @@ func (data *Student) Update() {
 }
 
 func (data *Student) Delete() {
-	// db := database.GetDB()
-	// if err := db.Where("student_id = ?", id).Delete(&data).Error; err != nil {
-	// 	panic(err)
-	// }
+	db := database.GetDB()
+	db.Where("student_id = ?", data.StudentID).Delete(&data)
 }
