@@ -21,8 +21,6 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&Student{})
-
 	r := gin.Default()
 
 	r.GET("/ping", func(c *gin.Context) {
