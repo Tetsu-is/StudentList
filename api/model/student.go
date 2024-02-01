@@ -1,10 +1,7 @@
 package model
 
 import (
-	"net/http"
 	"student/database"
-
-	"github.com/gin-gonic/gin"
 )
 
 type Student struct {
@@ -13,70 +10,34 @@ type Student struct {
 	Age       int    `json:"age"`
 }
 
-func CreateStudent(c *gin.Context) {
+func Create(student *Student) {
 	db := database.GetDB()
-	var student Student
 	db.Create(&student)
-	c.JSON(200, student)
 }
 
-func ReadAllStudents(c *gin.Context) {
+func ReadAll() []Student {
+	//(students []Student)でも良い？？
 	db := database.GetDB()
-	students := []Student{}
+	var students []Student
 	db.Find(&students)
-	c.JSON(200, students)
+	return students
 }
 
-func ReadStudentByID(c *gin.Context) {
+func ReadByID(student_id string) Student {
 	db := database.GetDB()
 	var student Student
-	id := c.Params.ByName("student_id")
-	if err := db.Where("student_id = ?", id).First(&student).Error; err != nil {
-		c.AbortWithStatus(404)
-	} else {
-		c.JSON(200, student)
-	}
+	db.Where("student_id = ?", student_id).First(&student)
+	return student
 }
 
-func UpdateStudent(c *gin.Context) {
+func (data *Student) Update() {
 	db := database.GetDB()
-	var student Student
-	id := c.Params.ByName("student_id")
-
-	if err := db.Where("student_id = ?", id).First(&student).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
-		return
-	}
-	var newStudent Student
-	if err := c.ShouldBindJSON(&newStudent); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	newStudent.StudentID = student.StudentID
-
-	if err := db.Model(&student).Where("student_id = ?", id).Save(&newStudent).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(200, newStudent)
+	db.Where("student_id = ?", data.StudentID).Save(&data)
 }
 
-func DeleteStudent(c *gin.Context) {
-	db := database.GetDB()
-	var student Student
-	id := c.Params.ByName("student_id")
-
-	if err := db.Where("student_id = ?", id).First(&student).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found!"})
-		return
-	}
-
-	if err := db.Where("student_id = ?", id).Delete(&student).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(200, "Deleted!")
+func (data *Student) Delete() {
+	// db := database.GetDB()
+	// if err := db.Where("student_id = ?", id).Delete(&data).Error; err != nil {
+	// 	panic(err)
+	// }
 }
