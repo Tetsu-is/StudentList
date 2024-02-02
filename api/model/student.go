@@ -5,37 +5,49 @@ import (
 )
 
 type Student struct {
-	StudentID int    `json:"student_id"`
+	StudentID int    `json:"student_id" gorm:"primaryKey"`
 	Name      string `json:"name"`
 	Age       int    `json:"age"`
 }
 
-func Create(student *Student) {
+func Create(student *Student) (Student, error) {
 	db := database.GetDB()
-	db.Create(&student)
+	if err := db.Create(&student).Error; err != nil {
+		return *student, err
+	}
+	return *student, nil
 }
 
-func ReadAll() []Student {
-	//(students []Student)でも良い？？
+func ReadAll() ([]Student, error) {
 	db := database.GetDB()
 	var students []Student
-	db.Find(&students)
-	return students
+	if err := db.Find(&students).Error; err != nil {
+		return nil, err
+	}
+	return students, nil
 }
 
-func ReadByID(student_id string) Student {
+func ReadByID(student_id string) (Student, error) {
 	db := database.GetDB()
 	var student Student
-	db.Where("student_id = ?", student_id).First(&student)
-	return student
+	if err := db.Where("student_id = ?", student_id).First(&student).Error; err != nil {
+		return student, err
+	}
+	return student, nil
 }
 
-func (data *Student) Update() {
+func (data *Student) Update() error {
 	db := database.GetDB()
-	db.Where("student_id = ?", data.StudentID).Save(&data)
+	if err := db.Where("student_id = ?", data.StudentID).Save(&data).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func (data *Student) Delete() {
+func (data *Student) Delete() error {
 	db := database.GetDB()
-	db.Where("student_id = ?", data.StudentID).Delete(&data)
+	if err := db.Where("student_id = ?", data.StudentID).Delete(&data).Error; err != nil {
+		return err
+	}
+	return nil
 }
